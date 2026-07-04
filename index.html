@@ -3,441 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Kost Acarya</title>
+    <title>Dasbor Manajemen Biaya Kost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-blue: #3b82f6;
-        }
-
         body {
-            margin: 0;
-            padding: 2rem;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15), transparent 25%);
-            background-attachment: fixed;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-weight: 600;
-            letter-spacing: -0.025em;
-            margin: 0 0 0.5rem 0;
-            font-size: 2.5rem;
-        }
-
-        .header p {
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .section-title {
-            max-width: 1200px;
-            margin: 3rem auto 1.5rem auto;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .section-title span {
-            color: var(--accent-blue);
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto 3rem auto;
-        }
-
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
-        .room-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .room-number {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .badge.kosong {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-green);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .badge.terisi {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--accent-red);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .occupant-data {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        .occupant-data strong {
-            color: var(--text-main);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: auto;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-primary { background-color: var(--accent-blue); }
-        .btn-danger { background-color: var(--accent-red); }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal-content {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-content h2 { margin-top: 0; }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 0.5rem;
-            color: var(--text-main);
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .btn-cancel {
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* bg-slate-900 */
+            color: #f8fafc; /* text-slate-50 */
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen p-8 flex flex-col items-center">
 
-    <div class="header">
-        <h1>Dashboard Manajemen Kost</h1>
-        <p>Pemantauan Status Kamar & Data Diri Penghuni</p>
-    </div>
+    <header class="text-center mb-12 w-full max-w-7xl">
+        <h1 class="text-4xl font-bold mb-2">Dasbor Manajemen Biaya</h1>
+        <p class="text-slate-400 text-sm">Pemantauan Status Kamar & Data Diri Penghuni</p>
+    </header>
 
-    <!-- Section Kost Acarya 2 -->
-    <h2 class="section-title"><span>■</span> Data Penghuni Kost Acarya 2</h2>
-    <div class="grid-container" id="gridAcarya2">
-        <!-- Kamar Acarya 2 di-render di sini -->
-    </div>
+    <main class="w-full max-w-7xl flex flex-col gap-12">
 
-    <!-- Section Kost Acarya 1 -->
-    <h2 class="section-title"><span>■</span> Data Penghuni Kost Acarya 1</h2>
-    <div class="grid-container" id="gridAcarya1">
-        <!-- Kamar Acarya 1 di-render di sini -->
-    </div>
+        <section>
+            <div class="flex items-center gap-2 mb-6 border-b border-slate-700 pb-2">
+                <div class="w-3 h-3 bg-blue-500"></div>
+                <h2 class="text-xl font-bold">Data Penghuni Kost Acarya 1</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="acarya1-container">
+                <!-- Kartu kamar Acarya 1 akan di-render di sini oleh JavaScript -->
+            </div>
+        </section>
 
-    <!-- Modal for adding occupant -->
-    <div class="modal-overlay" id="formModal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Isi Data Penghuni</h2>
-            <form id="occupantForm">
-                <input type="hidden" id="roomId">
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="nama" required placeholder="Masukkan nama penghuni">
-                </div>
-                <div class="form-group">
-                    <label>Nomor WhatsApp</label>
-                    <input type="tel" id="telepon" required placeholder="08xxxxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>Nomor WA Orang Tua</label>
-                    <input type="tel" id="no_ortu" required placeholder="08xxxxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>Tempat Tinggal (Asal)</label>
-                    <input type="text" id="tempat_tinggal" required placeholder="Masukkan kota/alamat asal">
-                </div>
-                <div class="form-group">
-                    <label>Tanggal Masuk</label>
-                    <input type="date" id="tanggal" required>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Data</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <section>
+            <div class="flex items-center gap-2 mb-6 border-b border-slate-700 pb-2">
+                <div class="w-3 h-3 bg-blue-500"></div>
+                <h2 class="text-xl font-bold">Data Penghuni Kost Acarya 2</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="acarya2-container">
+                <!-- Kartu kamar Acarya 2 akan di-render di sini oleh JavaScript -->
+            </div>
+        </section>
+
+    </main>
 
     <script>
-        // Gunakan key localStorage baru karena struktur datanya berubah
-        let roomsData = JSON.parse(localStorage.getItem('kostDataV3')) || [];
+        // Data hardcode untuk Acarya 1 (11 kamar)
+        const dataAcarya1 = [
+            { nomor: "01", status: "DIHUNI", nama: "Budi Santoso", wa: "+6281234567890", waOrtu: "+6281298765432", asal: "Jakarta", masuk: "01 Jan 2026", keluar: "-" },
+            { nomor: "02", status: "TERSEDIA" },
+            { nomor: "03", status: "DIHUNI", nama: "Andi Saputra", wa: "+628561234567", waOrtu: "+628567654321", asal: "Bandung", masuk: "15 Feb 2026", keluar: "-" },
+            { nomor: "04", status: "TERSEDIA" },
+            { nomor: "05", status: "TERSEDIA" },
+            { nomor: "06", status: "DIHUNI", nama: "Citra Lestari", wa: "+6281355556666", waOrtu: "+6281366665555", asal: "Surabaya", masuk: "10 Mar 2026", keluar: "-" },
+            { nomor: "07", status: "TERSEDIA" },
+            { nomor: "08", status: "TERSEDIA" },
+            { nomor: "09", status: "DIHUNI", nama: "Dewi Anggraini", wa: "+6281900001111", waOrtu: "+6281911110000", asal: "Semarang", masuk: "05 Apr 2026", keluar: "-" },
+            { nomor: "10", status: "TERSEDIA" },
+            { nomor: "11", status: "TERSEDIA" }
+        ];
 
-        // Inisialisasi Data jika kosong (Pertama kali buka web)
-        if (roomsData.length === 0) {
-            // Generate Data 18 Kamar untuk Kost Acarya 2
-            for(let i = 1; i <= 18; i++) {
-                roomsData.push({
-                    id: `A2-${i}`, // ID Unik contoh: A2-1
-                    building: 'Acarya 2',
-                    nomor: `Kamar ${String(i).padStart(2, '0')}`,
-                    status: 'kosong',
-                    penghuni: null // penghuni: { nama, telepon, no_ortu, tempat_tinggal, tanggal, tanggal_keluar }
-                });
-            }
+        // Data hardcode untuk Acarya 2 (18 kamar)
+        const dataAcarya2 = [
+            { nomor: "01", status: "TERSEDIA" },
+            { nomor: "02", status: "DIHUNI", nama: "I GUSTI PUTU ARYA WICAKSANA", wa: "+6281353746248", waOrtu: "+628124671508", asal: "Tabanan", masuk: "04 Juli 2026", keluar: "-" },
+            { nomor: "03", status: "TERSEDIA" },
+            { nomor: "04", status: "TERSEDIA" },
+            { nomor: "05", status: "TERSEDIA" },
+            { nomor: "06", status: "TERSEDIA" },
+            { nomor: "07", status: "DIHUNI", nama: "I GUSTI PUTU WAHYU DIATMIKA PUTRA", wa: "+6282144054370", waOrtu: "+62 819- 3847- 3850", asal: "Tabanan", masuk: "04 Juli 2026", keluar: "-" },
+            { nomor: "08", status: "DIHUNI", nama: " Ketut Mahesa Suputra Fajar", wa: " +6281999490283", waOrtu: "+6285237204840", asal: "JLN Kenyeri XII, Tojan,Klungkung", masuk: "04 Juli 2026", keluar: "-" },
+            { nomor: "09", status: "TERSEDIA" },
+            { nomor: "10", status: "DIHUNI", nama: "Eko Prasetyo", wa: "+6282211112222", waOrtu: "+6282222221111", asal: "Malang", masuk: "20 Mei 2026", keluar: "-" },
+            { nomor: "11", status: "TERSEDIA" },
+            { nomor: "12", status: "TERSEDIA" },
+            { nomor: "13", status: "TERSEDIA" },
+            { nomor: "14", status: "DIHUNI", nama: "Fajar Nugroho", wa: "+6285233334444", waOrtu: "+6285244443333", asal: "Yogyakarta", masuk: "01 Jun 2026", keluar: "-" },
+            { nomor: "15", status: "TERSEDIA" },
+            { nomor: "16", status: "TERSEDIA" },
+            { nomor: "17", status: "TERSEDIA" },
+            { nomor: "18", status: "TERSEDIA" }
+        ];
 
-            // Generate Data 11 Kamar untuk Kost Acarya 1
-            for(let i = 1; i <= 11; i++) {
-                roomsData.push({
-                    id: `A1-${i}`, // ID Unik contoh: A1-1
-                    building: 'Acarya 1',
-                    nomor: `Kamar ${String(i).padStart(2, '0')}`,
-                    status: 'kosong',
-                    penghuni: null 
-                });
-            }
-            saveData();
-        }
-
-        // Fungsi Simpan ke LocalStorage
-        function saveData() {
-            localStorage.setItem('kostDataV3', JSON.stringify(roomsData));
-        }
-
-        // Fungsi membuat elemen Card HTML (REVISED)
-        function createCardHTML(room) {
-            const isKosong = room.status === 'kosong';
-            const badgeClass = isKosong ? 'kosong' : 'terisi';
-            const badgeText = isKosong ? 'Tersedia' : 'Dihuni';
-
-            let actionBtnHTML;
-            let occupantHTML;
-
-            const formatDate = (dateString) => {
-                if (!dateString) return '-';
-                return new Date(dateString).toLocaleDateString('id-ID', {
-                    day: '2-digit', month: 'long', year: 'numeric'
-                });
-            };
-
-            // 1. Generate detail penghuni jika ada (untuk riwayat atau penghuni aktif)
-            if (room.penghuni) {
-                occupantHTML = `
-                    <div class="occupant-data">
-                        <div><strong>Nama:</strong> ${room.penghuni.nama}</div>
-                        <div><strong>WA:</strong> ${room.penghuni.telepon}</div>
-                        <div><strong>WA Ortu:</strong> ${room.penghuni.no_ortu || '-'}</div>
-                        <div><strong>Asal:</strong> ${room.penghuni.tempat_tinggal || '-'}</div>
-                        <div><strong>Masuk:</strong> ${formatDate(room.penghuni.tanggal)}</div>
-                        <div><strong>Keluar:</strong> ${formatDate(room.penghuni.tanggal_keluar)}</div>
+        // Fungsi untuk membuat elemen HTML untuk satu kartu kamar
+        function createCard(kamar) {
+            const isDihuni = kamar.status === "DIHUNI";
+            
+            // Kelas warna untuk badge status
+            const badgeClass = isDihuni 
+                ? "text-red-500 border-red-500/50 bg-red-500/10" 
+                : "text-emerald-500 border-emerald-500/50 bg-emerald-500/10";
+            
+            // Tampilan konten (data diri atau teks kosong)
+            let contentHTML = '';
+            if (isDihuni) {
+                contentHTML = `
+                    <div class="text-xs text-slate-300 space-y-1 mb-4 flex-grow">
+                        <p><span class="font-bold text-white">Nama :</span> ${kamar.nama}</p>
+                        <p><span class="font-bold text-white">WA:</span> ${kamar.wa}</p>
+                        <p><span class="font-bold text-white">WA Ortu:</span> ${kamar.waOrtu}</p>
+                        <p><span class="font-bold text-white">Asal:</span> ${kamar.asal}</p>
+                        <p><span class="font-bold text-white">Masuk:</span> ${kamar.masuk}</p>
+                        <p><span class="font-bold text-white">Keluar:</span> ${kamar.keluar}</p>
                     </div>
                 `;
             } else {
-                occupantHTML = '<div class="occupant-data">Belum ada data penghuni.</div>';
-            }
-
-            // 2. Tentukan tombol aksi berdasarkan status kamar saat ini
-            if (isKosong) {
-                actionBtnHTML = `<button class="btn btn-primary" onclick="openModal('${room.id}')">Isi Data & Check-in</button>`;
-            } else {
-                actionBtnHTML = `<button class="btn btn-danger" onclick="checkout('${room.id}')">Kosongkan Kamar (Check-out)</button>`;
-            }
-
-            // 3. Gabungkan semua menjadi satu kartu
-            return `
-                <div class="glass-card">
-                    <div class="room-header">
-                        <div class="room-number">${room.nomor}</div>
-                        <div class="badge ${badgeClass}">${badgeText}</div>
+                contentHTML = `
+                    <div class="text-sm text-slate-400 mb-4 flex-grow">
+                        Belum ada data penghuni.
                     </div>
-                    ${occupantHTML}
-                    ${actionBtnHTML}
+                `;
+            }
+
+            // Struktur HTML utama kartu
+            return `
+                <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4 flex flex-col h-full hover:bg-slate-800 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-bold text-lg text-white">Kamar ${kamar.nomor}</h3>
+                        <span class="text-[10px] font-bold px-2 py-1 border rounded-full ${badgeClass}">
+                            ${kamar.status}
+                        </span>
+                    </div>
+                    ${contentHTML}
+                    <div class="mt-auto pt-2">
+                        <button onclick='tampilkanDetailKamar(${JSON.stringify(kamar).replace(/'/g, "&#39;")})' class="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition-colors">
+                            Lihat Data
+                        </button>
+                    </div>
                 </div>
             `;
         }
 
+        // Fungsi render untuk menampilkan semua kartu ke dalam container
+        function renderCards() {
+            const container1 = document.getElementById('acarya1-container');
+            const container2 = document.getElementById('acarya2-container');
 
-        // Fungsi Render UI (Memisahkan Acarya 2 dan Acarya 1)
-        function renderRooms() {
-            const gridA2 = document.getElementById('gridAcarya2');
-            const gridA1 = document.getElementById('gridAcarya1');
+            container1.innerHTML = dataAcarya1.map(createCard).join('');
+            container2.innerHTML = dataAcarya2.map(createCard).join('');
+        }
+
+        function tampilkanDetailKamar(kamarData) {
+            // Hapus modal lama jika ada
+            const existingModal = document.getElementById('detailModal');
+            if (existingModal) existingModal.remove();
+
+            const isDihuni = kamarData.status === "DIHUNI";
             
-            gridA2.innerHTML = '';
-            gridA1.innerHTML = '';
+            const badgeClass = isDihuni 
+                ? "text-red-500 border-red-500/50 bg-red-500/10" 
+                : "text-emerald-500 border-emerald-500/50 bg-emerald-500/10";
 
-            roomsData.forEach(room => {
-                const cardHTML = createCardHTML(room);
-                if (room.building === 'Acarya 2') {
-                    gridA2.innerHTML += cardHTML;
-                } else if (room.building === 'Acarya 1') {
-                    gridA1.innerHTML += cardHTML;
-                }
-            });
-        }
+            let detailContent = '';
+            if (isDihuni) {
+                detailContent = `
+                    <div class="space-y-3 text-slate-300">
+                        <div class="grid grid-cols-3 gap-2 border-b border-slate-700/50 pb-2">
+                            <span class="font-bold text-white col-span-1">Nama</span>
+                            <span class="col-span-2 text-right">${kamarData.nama}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 border-b border-slate-700/50 pb-2">
+                            <span class="font-bold text-white col-span-1">No. WA</span>
+                            <span class="col-span-2 text-right">${kamarData.wa}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 border-b border-slate-700/50 pb-2">
+                            <span class="font-bold text-white col-span-1">WA Ortu</span>
+                            <span class="col-span-2 text-right">${kamarData.waOrtu}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 border-b border-slate-700/50 pb-2">
+                            <span class="font-bold text-white col-span-1">Asal</span>
+                            <span class="col-span-2 text-right">${kamarData.asal}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 border-b border-slate-700/50 pb-2">
+                            <span class="font-bold text-white col-span-1">Tgl Masuk</span>
+                            <span class="col-span-2 text-right">${kamarData.masuk}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <span class="font-bold text-white col-span-1">Tgl Keluar</span>
+                            <span class="col-span-2 text-right">${kamarData.keluar}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                detailContent = `
+                    <div class="text-center py-8 text-slate-400">
+                        <svg class="mx-auto h-12 w-12 mb-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        <p class="text-lg">Kamar ini masih tersedia.</p>
+                        <p class="text-sm mt-1">Belum ada data penghuni yang dimasukkan.</p>
+                    </div>
+                `;
+            }
 
-        // Fungsi Modal
-        const modal = document.getElementById('formModal');
-        const form = document.getElementById('occupantForm');
-
-        function openModal(id) {
-            document.getElementById('roomId').value = id;
-            const room = roomsData.find(r => r.id === id);
-            document.getElementById('modalTitle').innerText = `Isi Data - ${room.building} ${room.nomor}`;
-            form.reset();
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        // Handle Submit Form (Check-in) (REVISED)
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const id = document.getElementById('roomId').value;
+            const modalHTML = `
+                <div id="detailModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-[fadeIn_0.2s_ease-out]">
+                    <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl transform transition-all scale-100">
+                        
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-3xl font-bold text-white">Kamar ${kamarData.nomor}</h3>
+                                <p class="text-slate-400 text-sm mt-1">Detail Informasi Penghuni</p>
+                            </div>
+                            <span class="text-sm font-bold px-3 py-1.5 border rounded-full ${badgeClass}">
+                                ${kamarData.status}
+                            </span>
+                        </div>
+                        
+                        <div class="bg-slate-900/50 rounded-xl p-5 mb-6 border border-slate-700">
+                            ${detailContent}
+                        </div>
+                        
+                        <div class="flex gap-3 mt-auto">
+                            <button onclick="tutupDetailKamar()" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
+                                Tutup
+                            </button>
+                            ${isDihuni ? `
+                            <button onclick="hubungiWA('${kamarData.wa}')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                Hubungi WA
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            // Buat objek data penghuni baru. Ini akan menimpa data penghuni lama.
-            const occupantData = {
-                nama: document.getElementById('nama').value,
-                telepon: document.getElementById('telepon').value,
-                no_ortu: document.getElementById('no_ortu').value,
-                tempat_tinggal: document.getElementById('tempat_tinggal').value,
-                tanggal: document.getElementById('tanggal').value,
-                tanggal_keluar: null // Pastikan tanggal keluar kosong untuk penghuni baru
-            };
-
-            const roomIndex = roomsData.findIndex(r => r.id === id);
-            if (roomIndex > -1) {
-                roomsData[roomIndex].status = 'terisi';
-                roomsData[roomIndex].penghuni = occupantData; // Ganti data penghuni dengan yang baru
-
-                saveData();
-                renderRooms();
-                closeModal();
+            // Tambahkan animasi keyframe ke head jika belum ada
+            if (!document.getElementById('modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'modal-styles';
+                style.innerHTML = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: scale(0.95); }
+                        to { opacity: 1; transform: scale(1); }
+                    }
+                `;
+                document.head.appendChild(style);
             }
-        });
 
-        // Handle Checkout (Data akan dihapus)
-        function checkout(id) {
-            if (confirm('Apakah Anda yakin ingin mengosongkan kamar ini? Data penghuni akan dihapus secara otomatis.')) {
-                const roomIndex = roomsData.findIndex(r => r.id === id);
-                if (roomIndex > -1) {
-                    // Ubah status kamar menjadi kosong dan hapus data penghuni
-                    roomsData[roomIndex].status = 'kosong';
-                    roomsData[roomIndex].penghuni = null;
-                    
-                    saveData();
-                    renderRooms();
-                }
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            // Mencegah scroll body saat modal terbuka
+            document.body.style.overflow = 'hidden';
+        }
+
+        function tutupDetailKamar() {
+            const modal = document.getElementById('detailModal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto'; // Mengembalikan scroll
             }
         }
 
-        // Jalankan saat pertama kali halaman dimuat
-        renderRooms();
+        function hubungiWA(nomor) {
+            // Menghapus karakter selain angka dan tanda +
+            const cleanNumber = nomor.replace(/[^\d+]/g, '');
+            window.open(`https://wa.me/${cleanNumber}`, '_blank');
+        }
+
+        // Jalankan render saat halaman selesai dimuat
+        window.onload = renderCards;
     </script>
-
 </body>
 </html>
